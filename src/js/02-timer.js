@@ -26,16 +26,15 @@ const optoins = {
     // console.log(selectedDay);
     // console.log(optoins.defaultDate.getTime());
     if (selectedDay < new Date()) {
+      btnStart.disabled = true;
       Notify.failure('Please choose a date in the future');
       return;
     }
     btnStart.disabled = false;
-
-    btnStart.addEventListener('click', () => {
-      onClickTimerMarkUp(selectedDay);
-    });
   },
 };
+// віщаєм слухая на кнопку
+btnStart.addEventListener('click', onClickTimerMarkUp);
 // передаем ссылку на инпут и опк=ции гнастройки
 flatpickr(timePicker, optoins);
 
@@ -50,35 +49,35 @@ function btnDesable() {
 
 // функция которая выполняется при клике на кнопку
 
-function onClickTimerMarkUp(selectedTime) {
-  const timer = {
-    start() {
-      timerId = setInterval(() => {
-        const currentTime = Date.now();
+function onClickTimerMarkUp() {
+  const date = new Date(timePicker.value);
+  let timerId = setInterval(() => {
+    const currentTime = Date.now();
 
-        const deltaTime = selectedTime - currentTime;
+    const deltaTime = date.getTime() - currentTime;
 
-        const { days, hours, minutes, seconds } = convertMs(deltaTime);
-        // console.log(`seconds = ${seconds}`);
+    countSecondsLeft(deltaTime);
+    // console.log(days)
 
-        timerValueRef.days.textContent = days;
-        timerValueRef.hours.textContent = hours;
-        timerValueRef.minutes.textContent = minutes;
-        timerValueRef.seconds.textContent = seconds;
-        // console.log(days)
+    console.log(deltaTime);
 
-        console.log(deltaTime);
-
-        if (deltaTime === 0) {
-          clearInterval(timerId);
-          console.log('THIS IS ALL');
-        }
-      }, 1000);
-    },
-  };
-
-  timer.start();
+    if (deltaTime < 1000) {
+      clearInterval(timerId);
+      console.log('THIS IS ALL');
+    }
+  }, 1000);
 }
+// функція для запису значень в браузері
+function countSecondsLeft(ms) {
+  const { days, hours, minutes, seconds } = convertMs(ms);
+  // console.log(`seconds = ${seconds}`);
+
+  timerValueRef.days.textContent = days;
+  timerValueRef.hours.textContent = hours;
+  timerValueRef.minutes.textContent = minutes;
+  timerValueRef.seconds.textContent = seconds;
+}
+
 //функция приводит к строке и добавляет  0б если число меньше 2-уч знаков
 function pad(value) {
   return String(value).padStart(2, '0');
